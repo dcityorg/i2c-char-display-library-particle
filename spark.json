@@ -1,0 +1,7 @@
+{
+    "name": "I2cCharDisplay",
+    "version": "1.0.0",
+    "author": "Gary Muhonen <gary@wht.io>",
+    "license": "MIT",
+    "description": "I2C LCD and OLED Character Display Library"
+}
