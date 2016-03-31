@@ -1,17 +1,15 @@
+### I2cCharDisplay - Arduino and Particle library for controlling I²C (I2C IIC) character LCD and OLED Displays
+
 <div style="text-align: center;">
 
 <div style="display: inline-block; margin-right: 5px;">
-<img class="size-thumbnail wp-image-176" src="http://wht.io/wp-content/uploads/projects/i2c-oled/i2c-oled-and-photon-300x300.jpg" alt="i2c-oled-and-photon" width="300" height="300" />
-</div>
-
-<div style="display: inline-block; margin-right: 5px;">
-<img class="size-thumbnail wp-image-176" src="http://wht.io/wp-content/uploads/projects/i2c-oled/i2c-oled-module2.jpg" alt="i2c oled backpack with display" width="300" height="300" />
+<img class="size-thumbnail wp-image-176" src="http://wht.io/wp-content/uploads/projects/i2c-oled-backpack-eastrising/eastrising-text-1.jpg" alt="i2c oled backpack with display" width="300" height="200" />
 </div>
 
 </div>
 
 
-## I2cCharDisplay - Arduino and Particle library for controlling I²C (I2C IIC) character LCD and OLED Displays
+
 
 #### Short Description:
 
@@ -24,11 +22,11 @@ A demo program (in the examples folder) works with Arduino and Particle (Photon,
 **See the project details links below for installation and usage information.**
 
 #### Github repositories:
-* ###### [Arduino library files](https://github.com/wht-io/i2c-char-display-arduino.git)
-* ###### [Particle library files](https://github.com/wht-io/i2c-char-display-particle.git)
+* [Arduino library files](https://github.com/wht-io/i2c-char-display-arduino.git)
+* [Particle library files](https://github.com/wht-io/i2c-char-display-particle.git)
 
 #### Project Details:
 
-* ###### [Library installation and usage](http://wht.io/portfolio/i2c-display-library/)
-* ###### [OLED hardware information](http://wht.io/portfolio/i2c-oled-backpack-board/)
-* ###### [LCD hardware information](http://wht.io/portfolio/i2c-lcd-backpack-board/)
+* [Library installation and usage](http://wht.io/portfolio/i2c-display-library/)
+* [OLED hardware information](http://wht.io/portfolio/i2c-oled-backpack-board/)
+* [LCD hardware information](http://wht.io/portfolio/i2c-lcd-backpack-board/)
