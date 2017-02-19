@@ -4,7 +4,7 @@
 */
 
 /*
-  i2c-char-display.cpp
+  I2cCharDisplay.cpp
 
   Written by: Gary Muhonen  gary@wht.io
 
@@ -79,9 +79,9 @@
 
 
 #ifdef ARDUINO_ARCH_AVR        // if using an arduino
-#include "i2c-char-display.h"
+#include "I2cCharDisplay.h"
 #elif SPARK                    // if using a core, photon, or electron (by particle.io)
-#include "i2c-char-display.h"
+#include "I2cCharDisplay.h"
 #else                          // if using something else
 #endif
 

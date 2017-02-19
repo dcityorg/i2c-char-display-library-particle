@@ -4,7 +4,7 @@
 */
 
 /*
-  i2c-char-display.h
+  I2cCharDisplay.h
 
   Written by: Gary Muhonen  gary@wht.io
 
