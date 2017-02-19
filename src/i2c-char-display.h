@@ -4,7 +4,7 @@
 */
 
 /*
-  I2cCharDisplay.h
+  i2c-char-display.h
 
   Written by: Gary Muhonen  gary@wht.io
 
@@ -12,7 +12,17 @@
     1.0.0 - 3/19/2016
       Original Release.
     1.0.1 - 4/6/2016
-      Modified the cursorMove() description.
+      Modified the cursorMove() function to start at (1,1) instead of (0,0).
+      Modified the cursorMove() function to work with OLED modules correctly.
+      Modified the home() function to work with the newly modified cursorMove().
+      Modified the oledBegin() function to work with the Newhaven OLED modules.
+    1.0.2 - 2/14/2017
+      Made minor modifications to files to upgrade to Particle's Verson 2 Library format.
+      Added these OLED "fade display" functions (not very useful for some types of OLED displays)
+          void fadeOff();           // turns off the fade feature of the OLED
+          void fadeOnce(uint8_t);   // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+          void fadeBlink(uint8_t);  // blinks the fade feature of the OLED (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+
 
     Short Description:
       This library works with Arduino and Particle (Photon, Electron, and Core)
@@ -72,7 +82,7 @@
 #include "Arduino.h"
 #include <Wire.h>
 #elif SPARK                    // if using a core, photon, or electron (by particle.io)
-#include "application.h"
+#include "Particle.h"
 #else                          // if using something else
 #endif
 
@@ -81,12 +91,24 @@
 #define LCD_TYPE                     0 // if the display is an LCD using the PCA8574 outputting to the HD44780 lcd controller chip
 #define OLED_TYPE                    1 // if the display is a OLED using the US2066 oled controller chip
 
+// **********************
 // oled specific constants
-#define OLED_COMMANDMODE             0x80
-#define OLED_DATAMODE                0x40
-#define OLED_SETBRIGHTNESSCOMMAND    0X81
+// **********************
 
+#define OLED_COMMANDMODE             0x80       // command value to set up command mode
+#define OLED_DATAMODE                0x40       // command value to set up data mode
+#define OLED_SETBRIGHTNESSCOMMAND    0x81       // command address for setting the oled brightness
+#define OLED_SETFADECOMMAND          0x23       // command address for setting the fade out command
+
+// bit for setting the fade command
+#define OLED_FADEOFF              0X00       // command value for setting fade mode to off
+#define OLED_FADEON               0X20       // command value for setting fade mode to on
+#define OLED_FADEBLINK            0X30       // command value for setting fade mode to blink
+
+
+// **********************
 // lcd specific constants
+// **********************
 
 // bits on the PCA8574 chip for controlling the lcd
 #define LCD_BACKLIGHTON     8 // backlight on bit
@@ -166,13 +188,15 @@ public:
 
 // functions specific to lcd displays
 
-  void backlightOn();
-  void backlightOff();
+  void backlightOn();                                                // turns on the LCD backlight
+  void backlightOff();                                               // turns off the LCD backlight
 
 // functions specific to oled displays
 
-  void setBrightness(uint8_t);
-
+  void setBrightness(uint8_t);                                       // sets the brightness of the OLED display (0-255)
+  void fadeOff();                                                    // turns off the fade feature of the OLED
+  void fadeOnce(uint8_t);                                            // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+  void fadeBlink(uint8_t);                                           // blinks the fade feature of the OLED (fade time 0-16)
 
 
 /*

@@ -3,7 +3,7 @@
 <div style="text-align: center;">
 
 <div style="display: inline-block; margin-right: 5px;">
-<img class="size-thumbnail wp-image-176" src="http://wht.io/wp-content/uploads/projects/i2c-oled-backpack-newhaven/newhaven-seeeduino.jpg" alt="i2c oled backpack with display" width="300" height="200" />
+<img class="size-thumbnail wp-image-176" src="http://wht.io/wp-content/uploads/projects/i2c-oled-backpack-eastrising/eastrising-text-1.jpg" alt="i2c oled backpack with display" width="300" height="200" />
 </div>
 
 </div>
@@ -22,6 +22,7 @@ A demo program (in the examples folder) works with Arduino and Particle (Photon,
 **See the project details links below for installation and usage information.**
 
 #### Github repositories:
+
 * [Arduino library files](https://github.com/wht-io/i2c-char-display-arduino.git)
 * [Particle library files](https://github.com/wht-io/i2c-char-display-particle.git)
 

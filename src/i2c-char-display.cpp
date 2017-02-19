@@ -4,7 +4,7 @@
 */
 
 /*
-  I2cCharDisplay.cpp
+  i2c-char-display.cpp
 
   Written by: Gary Muhonen  gary@wht.io
 
@@ -16,6 +16,13 @@
       Modified the cursorMove() function to work with OLED modules correctly.
       Modified the home() function to work with the newly modified cursorMove().
       Modified the oledBegin() function to work with the Newhaven OLED modules.
+    1.0.2 - 2/14/2017
+      Made minor modifications to files to upgrade to Particle's Verson 2 Library format.
+      Added these OLED "fade display" functions (not very useful for some types of OLED displays)
+          void fadeOff();           // turns off the fade feature of the OLED
+          void fadeOnce(uint8_t);   // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+          void fadeBlink(uint8_t);  // blinks the fade feature of the OLED (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+
 
   Short Description:
     This library works with Arduino and Particle (Photon, Electron, and Core)
@@ -72,9 +79,9 @@
 
 
 #ifdef ARDUINO_ARCH_AVR        // if using an arduino
-#include "I2cCharDisplay.h"
+#include "i2c-char-display.h"
 #elif SPARK                    // if using a core, photon, or electron (by particle.io)
-#include "I2cCharDisplay.h"
+#include "i2c-char-display.h"
 #else                          // if using something else
 #endif
 
@@ -291,7 +298,7 @@ void I2cCharDisplay::createCharacter(uint8_t address, uint8_t characterMap[])
 
 
 
-// Turn the lcd backlight off/on
+// Turn the lcd backlight off
 void I2cCharDisplay::backlightOff(void)
 {
   _lcdBacklightControl = LCD_BACKLIGHTOFF;
@@ -300,7 +307,7 @@ void I2cCharDisplay::backlightOff(void)
   Wire.endTransmission();
 }
 
-
+// Turn the lcd backlight on
 void I2cCharDisplay::backlightOn(void)
 {
   _lcdBacklightControl = LCD_BACKLIGHTON;
@@ -312,6 +319,7 @@ void I2cCharDisplay::backlightOn(void)
 
 // functions specific to OLED displays
 
+// Set the oled brightness
 void I2cCharDisplay::setBrightness(uint8_t value)
 {
   sendCommand(0x80);        // set RE=1
@@ -330,7 +338,62 @@ void I2cCharDisplay::setBrightness(uint8_t value)
   sendCommand(0x28);
 }
 
+// Set the oled fade out feature to OFF
+void I2cCharDisplay::fadeOff()
+{
+  sendCommand(0x80);        // set RE=1
+  sendCommand(0x2A);
 
+  sendCommand(0x80);        // set SD=1
+  sendCommand(0x79);
+
+  sendCommand(OLED_SETFADECOMMAND);
+  sendCommand(OLED_FADEOFF);                     // set fade feature to OFF
+
+  sendCommand(0x80);        // set SD=0
+  sendCommand(0x78);
+
+  sendCommand(0x80);        // set RE=0
+  sendCommand(0x28);
+}
+
+// Set the oled fade out feature to ON
+void I2cCharDisplay::fadeOnce(uint8_t value)
+{
+  sendCommand(0x80);        // set RE=1
+  sendCommand(0x2A);
+
+  sendCommand(0x80);        // set SD=1
+  sendCommand(0x79);
+
+  sendCommand(OLED_SETFADECOMMAND);
+  sendCommand(OLED_FADEON | (0x0f & value));      // set fade feature to ON with a delay interval of value
+
+  sendCommand(0x80);        // set SD=0
+  sendCommand(0x78);
+
+  sendCommand(0x80);        // set RE=0
+  sendCommand(0x28);
+}
+
+// Set the oled fade out feature to BLINK
+void I2cCharDisplay::fadeBlink(uint8_t value)
+{
+  sendCommand(0x80);        // set RE=1
+  sendCommand(0x2A);
+
+  sendCommand(0x80);        // set SD=1
+  sendCommand(0x79);
+
+  sendCommand(OLED_SETFADECOMMAND);
+  sendCommand(OLED_FADEBLINK | (0x0f & value));      // set fade feature to BLINK with a delay interval of value
+
+  sendCommand(0x80);        // set SD=0
+  sendCommand(0x78);
+
+  sendCommand(0x80);        // set RE=0
+  sendCommand(0x28);
+}
 
 
 

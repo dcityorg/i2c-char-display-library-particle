@@ -4,7 +4,7 @@
 */
 
 /*
-  I2cCharDisplayDemo.ino
+  i2c-char-display-demo.ino
 
   Written by: Gary Muhonen  gary@wht.io
 
@@ -12,7 +12,17 @@
     1.0.0 - 3/19/2016
       Original release.
     1.0.1 - 4/6/2016
-      changed the cursorMove() commands to start at 1,1 (instead of 0,0)
+      Modified the cursorMove() function to start at (1,1) instead of (0,0).
+      Modified the cursorMove() function to work with OLED modules correctly.
+      Modified the home() function to work with the newly modified cursorMove().
+      Modified the oledBegin() function to work with the Newhaven OLED modules.
+    1.0.2 - 2/14/2017
+      Made minor modifications to files to upgrade to Particle's Verson 2 Library format.
+      Added these OLED "fade display" functions (not very useful for some types of OLED displays)
+          void fadeOff();           // turns off the fade feature of the OLED
+          void fadeOnce(uint8_t);   // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+          void fadeBlink(uint8_t);  // blinks the fade feature of the OLED (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+
 
   Short Description:
     This demo program works with Arduino and Particle (Photon, Electron, and Core)
@@ -48,10 +58,10 @@
 
 
 #ifdef ARDUINO_ARCH_AVR         // if using an arduino
-#include <I2cCharDisplay.h>
+#include <i2c-char-display.h>
 #include <Wire.h>
 #elif SPARK                     // if using a core, photon, or electron (by particle.io)
-#include "I2cCharDisplay/I2cCharDisplay.h"
+#include "i2c-char-display.h"
 #else                           // if using something else
 #endif
 
@@ -79,6 +89,7 @@ void setup()
 
 void loop()
 {
+
 
   // test the lcd backlight on/off and the oled brightness commands
   lcd.clear();
@@ -485,6 +496,57 @@ void loop()
   oled.print(j, DEC);
   delay(2000);
   }
+
+
+  // test the oled fade mode = blink
+  // test the lcd backlight on/off
+  // Note: Fade mode is not very useful for some displays, as some displays will fade in brightness to about 50% and then turn off.
+  for (uint8_t i = 0; i < TESTNUM; ++i)
+  //delay(2000);
+  {
+    lcd.clear();
+    oled.clear();
+    lcd.backlightOn();
+    lcd.print("Backlight On");
+    oled.fadeOff();
+    oled.print("Fade Mode = Off");
+    delay(2000);
+    lcd.clear();
+    oled.clear();
+    lcd.print("Backlight Off");
+    lcd.backlightOff();
+    oled.print("Fade Mode = Blink");
+    oled.fadeBlink(0);   // fade the oled with a delay of 10 (valid values are 0-15). You must use fadeOff() to turn off blink mode.
+    delay(10000);
+  }
+  lcd.print("Backlight On");
+  oled.fadeOff();
+
+
+
+  // test the oled fade mode = once
+  // test the lcd backlight on/off
+  // Note: Fade mode is not very useful for some displays, as some displays will fade in brightness to about 50% and then turn off.
+  for (uint8_t i = 0; i < TESTNUM; ++i)
+  {
+    lcd.clear();
+    oled.clear();
+    lcd.backlightOn();
+    lcd.print("Backlight On");
+    oled.fadeOff();
+    oled.print("Fade Mode = Off");
+    delay(2000);
+    lcd.clear();
+    oled.clear();
+    lcd.print("Backlight Off");
+    lcd.backlightOff();
+    oled.print("Fade Mode = Once");
+    oled.fadeOnce(4);  // fade out the oled once with a delay of 4 (valid values are 0-15). You must use fadeOff() to turn display on again.
+    delay(8000);
+  }
+  lcd.print("Backlight On");
+  oled.fadeOff();
+
 
 
 }
