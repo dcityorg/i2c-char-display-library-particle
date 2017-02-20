@@ -31,7 +31,7 @@
     display modules that use the I2C communication protocol).
 
     The library will work with **LCD** and **OLED** character displays
-    (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the the
+    (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the
     HD44780 controller chip and have a I2C PCA8574 i/o expander chip
     on a backpack board (which gives the display I2C capability).
     OLED display modules must have the US2066 controller chip

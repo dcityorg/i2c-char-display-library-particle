@@ -15,7 +15,7 @@
 
 This library works with Arduino and Particle (Photon, Electron, and Core) microcontroller boards and it provides many functions to communicate with OLED and LCD character display modules that use the I²C communication protocol. Functions such as Print, clear, cursorMove, displayShiftLeft, createCharacter are included.
 
-The library will work with **LCD** and **OLED** character displays (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the the HD44780 controller chip and have a I2C PCA8574 i/o expander chip on a backpack board (which gives the display I2C capability). OLED display modules must have the US2066 controller chip (which has I2C built in).
+The library will work with **LCD** and **OLED** character displays (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the HD44780 controller chip and have a I2C PCA8574 i/o expander chip on a backpack board (which gives the display I2C capability). OLED display modules must have the US2066 controller chip (which has I2C built in).
 
 A demo program (in the examples folder) works with Arduino and Particle (Photon, Electron, and Core) microcontroller boards and it tests all of the functions in the I2cCharDisplay library.
 

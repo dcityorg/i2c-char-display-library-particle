@@ -357,7 +357,7 @@ void I2cCharDisplay::fadeOff()
   sendCommand(0x28);
 }
 
-// Set the oled fade out feature to ON
+// Set the oled fade out feature to ON (value is the rate of fade 0-15)
 void I2cCharDisplay::fadeOnce(uint8_t value)
 {
   sendCommand(0x80);        // set RE=1
@@ -376,7 +376,7 @@ void I2cCharDisplay::fadeOnce(uint8_t value)
   sendCommand(0x28);
 }
 
-// Set the oled fade out feature to BLINK
+// Set the oled fade out feature to BLINK (value is the rate of fade 0-15)
 void I2cCharDisplay::fadeBlink(uint8_t value)
 {
   sendCommand(0x80);        // set RE=1

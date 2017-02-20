@@ -195,8 +195,8 @@ public:
 
   void setBrightness(uint8_t);                                       // sets the brightness of the OLED display (0-255)
   void fadeOff();                                                    // turns off the fade feature of the OLED
-  void fadeOnce(uint8_t);                                            // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
-  void fadeBlink(uint8_t);                                           // blinks the fade feature of the OLED (fade time 0-16)
+  void fadeOnce(uint8_t);                                            // fade out the display to off (fade time 0-15) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
+  void fadeBlink(uint8_t);                                           // blinks the fade feature of the OLED (fade time 0-15) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
 
 
 /*
