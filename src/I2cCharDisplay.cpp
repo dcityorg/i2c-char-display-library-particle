@@ -6,9 +6,9 @@
 /*
   I2cCharDisplay.cpp
 
-  Written by: Gary Muhonen  gary@wht.io
+  Written by: Gary Muhonen  gary@dcity.org
 
-  versions
+  Versions
     1.0.0 - 3/19/2016
       Original Release.
     1.0.1 - 4/6/2016
@@ -16,82 +16,87 @@
       Modified the cursorMove() function to work with OLED modules correctly.
       Modified the home() function to work with the newly modified cursorMove().
       Modified the oledBegin() function to work with the Newhaven OLED modules.
-    1.0.2 - 2/14/2017
-      Made minor modifications to files to upgrade to Particle's Verson 2 Library format.
-      Added these OLED "fade display" functions (not very useful for some types of OLED displays)
+    1.0.2 - 4/17/2017
+      Added a second class constructor (with additional parameter i2cPort),
+        so that the user could specify which i2c port to use (0 or 1)
+        Port 0 is the main i2c port using pins (SDA and SCL).
+        Port 1 is the aux i2c port using pins (SDA1 and SCL1, e.g. on an Arduino DUE board).
+        This adds support for the Arduino DUE board (using either of it's i2c ports).
+    1.0.3 - 8/27/2018 Transfer to GM, and some minor changes
+        Added these OLED "fade display" functions (not very useful for some types of OLED displays)
           void fadeOff();           // turns off the fade feature of the OLED
           void fadeOnce(uint8_t);   // fade out the display to off (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
           void fadeBlink(uint8_t);  // blinks the fade feature of the OLED (fade time 0-16) - (on some display types, it doesn't work very well. It takes the display to half brightness and then turns off display)
 
 
   Short Description:
-    This library works with Arduino and Particle (Photon, Electron, and Core)
-    microcontroller boards and it provides many functions to communicate with
-    OLED and LCD character display modules that use the I2C communication
-    protocol.
 
-    The library will work with **LCD** and **OLED** character displays
-    (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the the
-    HD44780 controller chip and have a I2C PCA8574 i/o expander chip
-    on a backpack board (which gives the display I2C capability).
-    OLED display modules must have the US2066 controller chip
-    (which has I2C built in).
+      These files provide a software library and demo program for the Arduino
+       and Particle microcontroller boards.
 
-    See the project details links below for installation and usage information.
+      The library files provide useful functions to make it easy
+      to communicate with OLED and LCD character
+      display modules that use the I2C communication protocol. The demo
+      program shows the usage of the functions in the library.
 
-    Github repositories:
-    * Arduino library files:  https://github.com/wht-io/i2c-char-display-arduino.git
-    * Particle library files: https://github.com/wht-io/i2c-char-display-particle.git
+      The library will work with **LCD** and **OLED** character displays
+      (e.g. 16x2, 20x2, 20x4, etc.). The LCD displays must use the the
+      HD44780 controller chip and have a I2C PCA8574 i/o expander chip
+      on a backpack board (which gives the display I2C capability).
+      OLED display modules must have the US2066 controller chip
+      (which has I2C built in). Backback boards are available and
+      details are in the link below.
 
-    Project Details:
 
-    * Library installation and usage: http://wht.io/portfolio/i2c-display-library/
-    * OLED hardware information for EastRising modules: http://wht.io/portfolio/i2c-oled-backpack-board-eastrising/
-    * OLED hardware information for Newhaven modules: http://wht.io/portfolio/i2c-oled-backpack-board-newhaven/
-    * LCD hardware information: http://wht.io/portfolio/i2c-lcd-backpack-board/
-*/
+  https://www.dcity.org/portfolio/i2c-display-library/
+  This link has details including:
+      * software library installation for use with Arduino, Particle and Raspberry Pi boards
+      * list of functions available in these libraries
+      * a demo program (which shows the usage of most library functions)
+      * info on OLED and LCD character displays that work with this software
+      * hardware design for a backpack board for LCDs and OLEDs, available on github
+      * info on backpack “bare” pc boards available from OSH Park.
 
-/*
-  Windy Hill Technology LLC code, firmware, and software is released under the
-  MIT License (http://opensource.org/licenses/MIT).
-
-  The MIT License (MIT)
-
-  Copyright (c) 2016 Windy Hill Technology LLC
-
-  Permission is hereby granted, free of charge, to any person obtaining a
-  copy of this software and associated documentation files (the "Software"),
-  to deal in the Software without restriction, including without limitation
-  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-  and/or sell copies of the Software, and to permit persons to whom the
-  Software is furnished to do so, subject to the following conditions:
-  The above copyright notice and this permission notice shall be included
-  in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-  DEALINGS IN THE SOFTWARE.
+  License Information:  https://www.dcity.org/license-information/
 */
 
 
+
+// include files... some boards require different include files
 #ifdef ARDUINO_ARCH_AVR        // if using an arduino
 #include "I2cCharDisplay.h"
-#elif SPARK                    // if using a core, photon, or electron (by particle.io)
+#define Wire1 Wire             // regular arduinos don't have a second i2c port, just redefine Wire1 to be Wire
+#elif ARDUINO_ARCH_SAM         // if using a arduino DUE
 #include "I2cCharDisplay.h"
-#else                          // if using something else
+#elif PARTICLE                 // if using a core, photon, or electron (by particle.io)
+#include "I2cCharDisplay.h"
+#define Wire1 Wire             // doesn't have a second i2c port, just redefine Wire1 to be Wire
+#elif defined(__MK20DX128__) || (__MK20DX256__) || (__MK20DX256__) || (__MK62FX512__) || (__MK66FX1M0__) // if using a teensy 3.0, 3.1, 3.2, 3.5, 3.6
+#include "I2cCharDisplay.h"
+#else                          // if using something else then this may work
+#include "I2cCharDisplay.h"
+#define Wire1 Wire             // regular arduinos don't have a second i2c port, just redefine Wire1 to be Wire
 #endif
 
 
-
 // class constructors
+
+// use this constructor if using the main i2c port (pins SDA and SCL)
 I2cCharDisplay::I2cCharDisplay(uint8_t displayType, uint8_t i2cAddress, uint8_t rows)
 {
   _displayType         = displayType;
   _i2cAddress          = i2cAddress;
+  _i2cPort             = 0;
+  _rows                = rows;
+  _lcdBacklightControl = LCD_BACKLIGHTON;
+}
+
+// use this constructor if you want to specify which i2c port to use (0 or 1) (port 0 uses pins SDA and SCL, and port 1 uses pins SDA1 and SCL1, for example on an Arduino Due board)
+I2cCharDisplay::I2cCharDisplay(uint8_t displayType, uint8_t i2cAddress, uint8_t rows, uint8_t i2cPort)
+{
+  _displayType         = displayType;
+  _i2cAddress          = i2cAddress;
+  _i2cPort             = i2cPort;
   _rows                = rows;
   _lcdBacklightControl = LCD_BACKLIGHTON;
 }
@@ -102,6 +107,11 @@ I2cCharDisplay::I2cCharDisplay(uint8_t displayType, uint8_t i2cAddress, uint8_t 
 
 void I2cCharDisplay::begin()
 {
+  if (_i2cPort==0)
+    Wire.begin();   // init i2c
+  if (_i2cPort==1)
+    Wire1.begin();   // init the other i2c port
+
   switch (_displayType)
   {
   case LCD_TYPE:
@@ -298,28 +308,23 @@ void I2cCharDisplay::createCharacter(uint8_t address, uint8_t characterMap[])
 
 
 
-// Turn the lcd backlight off
+// Turn the lcd backlight off/on
 void I2cCharDisplay::backlightOff(void)
 {
   _lcdBacklightControl = LCD_BACKLIGHTOFF;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(_lcdBacklightControl));
-  Wire.endTransmission();
+  i2cWrite1((int)(_lcdBacklightControl));
 }
 
-// Turn the lcd backlight on
+
 void I2cCharDisplay::backlightOn(void)
 {
   _lcdBacklightControl = LCD_BACKLIGHTON;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(_lcdBacklightControl));
-  Wire.endTransmission();
+  i2cWrite1((int)(_lcdBacklightControl));
 }
 
 
 // functions specific to OLED displays
 
-// Set the oled brightness
 void I2cCharDisplay::setBrightness(uint8_t value)
 {
   sendCommand(0x80);        // set RE=1
@@ -397,6 +402,9 @@ void I2cCharDisplay::fadeBlink(uint8_t value)
 
 
 
+
+
+
 // private functions ********************************
 
 void I2cCharDisplay::sendCommand(uint8_t value)
@@ -437,6 +445,36 @@ void I2cCharDisplay::sendData(uint8_t value)
 }
 
 
+void I2cCharDisplay::i2cWrite1(uint8_t data){   // write one byte to i2c bus, either i2cPort 0 or 1
+  if (_i2cPort == 1) {
+    Wire1.beginTransmission(_i2cAddress);           // **** Start I2C
+    Wire1.write(data);
+    Wire1.endTransmission();                        // **** End I2C
+  }
+  else {
+    Wire.beginTransmission(_i2cAddress);           // **** Start I2C
+    Wire.write(data);
+    Wire.endTransmission();                        // **** End I2C
+  }
+}
+
+
+void I2cCharDisplay::i2cWrite2(uint8_t data1, uint8_t data2){  // write 2 bytes to the i2c bus, either i2cPort 0 or 1
+  if (_i2cPort == 1) {
+    Wire1.beginTransmission(_i2cAddress);           // **** Start I2C
+    Wire1.write(data1);
+    Wire1.write(data2);
+    Wire1.endTransmission();                        // **** End I2C
+  }
+  else {
+    Wire.beginTransmission(_i2cAddress);           // **** Start I2C
+    Wire.write(data1);
+    Wire.write(data2);
+    Wire.endTransmission();                        // **** End I2C
+  }
+}
+
+
 // sendCommand - send command to the display
 // value is what is sent
 void I2cCharDisplay::sendLcdCommand(uint8_t value)
@@ -452,18 +490,12 @@ void I2cCharDisplay::sendLcdCommand(uint8_t value)
   // write the 2 bytes of data to the display
   for (uint8_t i = 0; i < 2; ++i)
   {
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]));
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]));
     // set the enable bit and write again
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]) | LCD_ENABLEON);
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]) | LCD_ENABLEON);
     delayMicroseconds(1);               // hold enable high for 1us
     // clear the enable bit and write again
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]) | LCD_ENABLEOFF);
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]) | LCD_ENABLEOFF);
     delayMicroseconds(1);           //
   }
 }
@@ -485,18 +517,12 @@ void I2cCharDisplay::sendLcdData(uint8_t value)
   // write the 2 bytes of data to the display
   for (uint8_t i = 0; i < 2; ++i)
   {
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]));
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]));
     // set the enable bit and write again
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]) | LCD_ENABLEON);
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]) | LCD_ENABLEON);
     delayMicroseconds(1);               // hold enable high for 1us
     // clear the enable bit and write again
-    Wire.beginTransmission(_i2cAddress);
-    Wire.write((int)(dataToSend[i]) | LCD_ENABLEOFF);
-    Wire.endTransmission();
+    i2cWrite1((int)(dataToSend[i]) | LCD_ENABLEOFF);
     delayMicroseconds(1);
   }
 }
@@ -504,20 +530,14 @@ void I2cCharDisplay::sendLcdData(uint8_t value)
 
 void I2cCharDisplay::sendOledCommand(uint8_t value)
 {
-  Wire.beginTransmission(_i2cAddress);           // **** Start I2C
-  Wire.write(OLED_COMMANDMODE);                  // **** Set OLED Command mode
-  Wire.write(value);
-  Wire.endTransmission();                        // **** End I2C
+  i2cWrite2(OLED_COMMANDMODE, value);
   delay(10);
 }
 
 
 void I2cCharDisplay::sendOledData(uint8_t value)
 {
-  Wire.beginTransmission(_i2cAddress);        // **** Start I2C
-  Wire.write(OLED_DATAMODE);                  // **** Set OLED Data mode
-  Wire.write(value);
-  Wire.endTransmission();                     // **** End I2C
+  i2cWrite2(OLED_DATAMODE, value);
 }
 
 
@@ -627,77 +647,51 @@ void I2cCharDisplay::lcdBegin()
 
   // set all of the outputs on the PCA8574 chip to 0, except the backlight bit if on
   data = _lcdBacklightControl;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data));
-  Wire.endTransmission();
+  i2cWrite1((int)(data));
   delay(1000);
 
   // put lcd in 4 bit mode
   data = 0x30 | _lcdBacklightControl;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data));
-  Wire.endTransmission();
+  i2cWrite1((int)(data));
   // set the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEON));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEON));
   delayMicroseconds(1);                 // hold enable high for 1us
   // clear the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEOFF));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEOFF));
   delayMicroseconds(1);
   delayMicroseconds(4300);  // wait min 4.1ms
 
   // put lcd in 4 bit mode again
   data = 0x30 | _lcdBacklightControl;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data));
-  Wire.endTransmission();
+  i2cWrite1((int)(data));
   // set the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEON));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEON));
   delayMicroseconds(1);                 // hold enable high for 1us
   // clear the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEOFF));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEOFF));
   delayMicroseconds(1);
   delayMicroseconds(4300);   // wait min 4.1ms
 
   // put lcd in 4 bit mode again
   data = 0x30 | _lcdBacklightControl;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data));
-  Wire.endTransmission();
+  i2cWrite1((int)(data));
   // set the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEON));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEON));
   delayMicroseconds(1);                 // hold enable high for 1us
   // clear the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEOFF));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEOFF));
   delayMicroseconds(1);
   delayMicroseconds(4300);   // wait min 4.1ms
 
 
   // set up 4 bit interface
   data = 0x20 | _lcdBacklightControl;
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data));
-  Wire.endTransmission();
+  i2cWrite1((int)(data));
   // set the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEON));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEON));
   delayMicroseconds(1);                 // hold enable high for 1us
   // clear the enable bit and write again
-  Wire.beginTransmission(_i2cAddress);
-  Wire.write((int)(data | LCD_ENABLEOFF));
-  Wire.endTransmission();
+  i2cWrite1((int)(data | LCD_ENABLEOFF));
   delayMicroseconds(1);
 
 
