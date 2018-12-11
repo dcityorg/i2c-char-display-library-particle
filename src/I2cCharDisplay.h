@@ -69,7 +69,7 @@
 #elif ARDUINO_ARCH_SAM        // if using an arduino DUE
 #include "Arduino.h"
 #include "Wire.h"
-#elif PARTICLE                 // if using a core, photon, or electron (by particle.io)
+#elif PARTICLE                 // if using a core, photon, electron, argon, boron, xenon, etc. (by particle.io)
 #include "Particle.h"
 #elif defined(__MK20DX128__) || (__MK20DX256__) || (__MK20DX256__) || (__MK62FX512__) || (__MK66FX1M0__) // if using a teensy 3.0, 3.1, 3.2, 3.5, 3.6
 #include "Arduino.h"
