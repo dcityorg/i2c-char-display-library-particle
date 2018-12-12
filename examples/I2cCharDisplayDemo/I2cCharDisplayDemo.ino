@@ -100,8 +100,9 @@ I2cCharDisplay oled(OLED_TYPE, OLEDADDRESS, 2); // create an oled object for a 2
 void setup()
 {
   Wire.begin();                     // initialize i2c
-  lcd.begin();                      // initialize the lcd
   oled.begin();                     // initialize the oled
+  lcd.begin();                      // initialize the lcd
+
 }
 
 
